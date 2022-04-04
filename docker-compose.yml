@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongo_next
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: next
+    volumes:
+      - ./data:/data/db
