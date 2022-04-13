@@ -1,0 +1,1575 @@
+// This is your Prisma schema file, learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["interactiveTransactions"]
+}
+
+enum QuestType {
+    Daily
+    Main
+    Side
+}
+
+enum LocationType {
+    Village
+    MonsterArena
+    Road
+}
+
+enum FeatureType {
+    Rest
+    Shop
+}
+
+enum Gender {
+    M
+    F
+}
+
+enum UserRole {
+    Player
+    Admin
+    Editor
+}
+
+enum CharacterType {
+    Normal
+    Npc
+    Monster
+    NonNFT
+}
+
+enum RaceType {
+    Human
+    Orc
+    Elf
+    Fairy
+    Dragon
+    Dragonborn
+    Demon
+    Angel
+    Monster
+}
+
+enum ElementType {
+    Normal
+    Fire
+    Water
+    Grass
+    Thunder
+    Rock
+    Ice
+}
+
+enum Status {
+    Removed
+    Active
+    Hidden
+}
+
+enum RewardType {
+    Item
+    Exp
+    Gold
+    Energy
+    Token
+    NftItem
+    Material
+    Road
+}
+
+enum ConsequenceType {
+    Positive
+    Negative
+}
+
+enum EventType {
+    Active
+    Passive
+    Combat
+    Lucky
+    Random
+}
+
+enum ItemType {
+    Material
+    Equipment
+    Consumable
+}
+
+enum EquipmentSlot {
+    MainWeapon
+    SubWeapon
+    HeadGear
+    Armor
+    FootWear
+    Pant
+    Gloves
+    Mount
+    Medal
+    SkillBook
+}
+
+enum QuestStatus {
+    NotReceived
+    Pending
+    Doing
+    Finished
+    GiveUp
+    Done
+}
+
+enum TaskType {
+    Kill
+    Gather
+    Delivery
+    GoTo
+    TalkTo
+    KillAny
+    WinBattle
+    SpendGold
+    MeetEvent
+}
+
+enum QuestProgressStatus {
+    Undone
+    Done
+}
+
+enum RequirementType {
+    HavingRace
+    HavingElement
+    HavingItem
+    HavingEnergy
+    HavingGold
+    FinishQuest
+    HaveStatGt
+    HaveStatLt
+    HaveStatGte
+    HaveStatLte
+    DoingQuest
+}
+
+enum RootEventRequirementType {
+    Moving
+    FromAToB
+    MoveToLocation
+    AtLocation
+    HaveItem
+    WinningAFight
+    CausalityFromEvent
+    CompleteQuest
+    CompleteEvent
+    UseItem
+    DoingQuest
+}
+
+enum EventAppearanceType {
+    Fixed
+    BaseAndGrowth
+    FirstTimeFixed
+    FirstTimeBaseGrowth
+}
+
+enum RequirementCheckType {
+    And
+    Or
+}
+
+enum ClaimRewardType {
+    Token
+    Exp
+    Material
+    Equipment
+    Nft
+}
+
+enum DialogueTriggerType {
+    Interactive
+    AtLocation
+    FinishQuest
+    StartEvent
+    EndEvent
+    FinishEvent
+}
+
+enum DialogueEmotionType {
+    Normal
+    Idle
+    Sad
+    Excited
+    Angry
+    Cry
+    Smile
+}
+
+enum SkillType {
+    Passive
+    Active
+}
+
+enum DamageType {
+    Pure
+    Physical
+    Magical
+    None
+}
+
+enum JobType {
+    Paladin
+    BladeDancer
+    SpellSinger
+    Warrior
+    Berserker
+    WarlordShaman
+    WindRanger
+    WindHunter
+    ForestGhost
+    NatureKeeper
+    Enchantress
+    OutlawWanderer
+    Thaumaturge
+    Immortal
+    SkyPredator
+    Wrath
+    Vanadis
+    Celestial
+    Valkyrie
+    HellBringer
+    Necropolis
+    SoulMaster
+    BloodFury
+    TheUnTouched
+}
+
+enum TargetType {
+    Ground
+    Self
+    Enemy
+    Ally
+    NotSelf
+    SelfOrAlly
+    SummonedAlly
+    All
+}
+
+enum StakingQuestStatus {
+    Active
+    Inactive
+}
+
+enum StakingQuestRequirementType {
+    CharacterQuantity
+    HaveRace
+    HaveRarity
+    HaveElement
+    Level
+    HaveStat
+    HaveItem
+    HaveMaterial
+    FinishedQuest
+    Gender
+}
+
+enum StakingRewardType {
+    Gold
+    Exp
+    Energy
+    Item
+    NftItem
+    Material
+    Token
+}
+
+enum StakingQuestProgressStatus {
+    NotReceived
+    Inprogress
+    Done
+    Failed
+    Successed
+    Cancel
+}
+
+enum StakingRewardCategory {
+    Normal
+    Extra
+}
+
+enum AccountType {
+    Normal
+    IsB // Is Bot
+    IsM // Is managed
+}
+
+// NFT Character Hero
+model Character {
+    // id        String   @id @default(uuid())
+    id             Int               @id
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt
+    metaId         Int               @unique
+    image          String?
+    race           String
+    type           String
+    about          String?           @db.VarChar(255)
+    name           String?           @db.VarChar(255)
+    gender         String
+    traitSkintone  Json?
+    traitEyes      Json?
+    traitHair      Json?
+    traitMouth     Json?
+    traitScar      Json?
+    traitTattoo    Json?
+    str            Int
+    agi            Int
+    intel          Int
+    luck           Int
+    basedStr       Int?              @default(0)
+    basedAgi       Int?              @default(0)
+    basedIntel     Int?              @default(0)
+    basedLuck      Int?              @default(0)
+    owner          String?
+    totalPoint     Int               @default(0)
+    usedPoint      Int               @default(0)
+    point          Int               @default(0)
+    level          Int               @default(1)
+    listedPrice    Decimal?          @db.Decimal(65, 30)
+    listedBlock    Int?
+    offeredPrice   Decimal?          @db.Decimal(65, 30)
+    offeredBlock   Int?
+    soldPrice      Decimal?          @db.Decimal(65, 30)
+    soldBlock      Int?
+    stakeAmount    Decimal?          @db.Decimal(65, 30)
+    lpStakedAmount Decimal?          @db.Decimal(65, 30)
+    stakeBlock     Int?
+    skillTree      Json?
+    exp            Int?              @default(0)
+    alive          Boolean           @default(true)
+    userId         String?
+    user           User?             @relation(fields: [userId], references: [id])
+    lastTransfer   DateTime?
+    igcharacter    InGameCharacter?
+    characterItems CharacterItems[]
+    characterSlots CharacterSlots[]
+    stakingPool    StakingQuestPool?
+}
+
+model SoulCharacter {
+    // id        String   @id @default(uuid())
+    id           Int                  @id
+    createdAt    DateTime             @default(now())
+    updatedAt    DateTime             @updatedAt
+    image        String?
+    lifespan     Int
+    traits       SoulCharacterTrait[]
+    owner        String?
+    // totalPoint     Int                  @default(0)
+    // usedPoint      Int                  @default(0)
+    // point          Int                  @default(0)
+    // level          Int                  @default(1)
+    listedPrice  Decimal?             @db.Decimal(65, 30)
+    listedBlock  Int?
+    offeredPrice Decimal?             @db.Decimal(65, 30)
+    offeredBlock Int?
+    soldPrice    Decimal?             @db.Decimal(65, 30)
+    soldBlock    Int?
+    stakeAmount  Decimal?             @db.Decimal(65, 30)
+    stakeBlock   Int?
+    exp          Int?                 @default(0)
+    alive        Boolean              @default(true)
+    userId       String?
+    lastTransfer DateTime?
+    user         User?                @relation(fields: [userId], references: [id])
+    igcharacter  InGameCharacter?
+    stakingPool  StakingQuestPool?
+}
+
+model SoulCharacterTrait {
+    soulCharacterId Int
+    SoulCharacter   SoulCharacter @relation(fields: [soulCharacterId], references: [id])
+    soulTraitId     Int
+    SoulTrait       SoulTrait     @relation(fields: [soulTraitId], references: [id])
+    type            String
+
+    @@id([soulCharacterId, soulTraitId, type])
+}
+
+model SoulTrait {
+    id                 Int                  @id @default(autoincrement())
+    type               String
+    rate               Float
+    sumRate            Float
+    tier               Int                  @default(0)
+    name               String
+    image              String
+    race               RaceType
+    gender             Gender
+    str                Int                  @default(0)
+    agi                Int                  @default(0)
+    intel              Int                  @default(0)
+    luck               Int                  @default(0)
+    SoulCharacterTrait SoulCharacterTrait[]
+}
+
+model User {
+    id             String            @id @default(uuid())
+    email          String?           @unique
+    username       String?           @unique
+    session        Session[]
+    walletAddress  String?           @unique
+    password       String?
+    role           UserRole?         @default(Player)
+    accountType    AccountType       @default(Normal)
+    characters     Character[]
+    soulCharacters SoulCharacter[]
+    igcharacters   InGameCharacter[]
+    game           GameState?
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt
+}
+
+model Session {
+    id        String   @id @default(uuid())
+    userId    String
+    token     String
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// Mapping point to either itemNft or itemInGame (never both)
+model Item {
+    id                  Int                       @id @default(autoincrement())
+    name                String
+    displayName         String?
+    useFor              String?
+    description         String?
+    type                String
+    str                 Int?
+    weaponType          String?
+    agi                 Int?
+    intel               Int?
+    luck                Int?
+    magicDmg            Int?
+    physicDmg           Int?
+    magicDef            Int?
+    physicDef           Int?
+    hp                  Int?
+    allStats            Int?
+    moveRange           Int?                      @default(0)
+    attackRange         Int?                      @default(0)
+    critical            Int?
+    evade               Int?
+    speed               Int?
+    armor               Int?
+    requiredLevel       Int                       @default(0)
+    prototypeId         Int?
+    // bonusStr          Int?
+    // bonusAgi          Int?
+    // bonusIntel        Int?
+    // bonusLuck         Int?
+    // bonusDamage       Int?
+    removeDOT           Boolean                   @default(false)
+    removeDiscomfort    Boolean                   @default(false)
+    removeCurse         Boolean                   @default(false)
+    regenHp             Int?
+    regenEnergy         Int?
+    equipmentSlotType   String? // have value if type === ItemType.Equipment
+    rarity              String?
+    tier                Int                       @default(1)
+    itemNftId           Int?                      @unique
+    itemNft             ItemNft?                  @relation(fields: [itemNftId], references: [id])
+    itemInGameId        Int?                      @unique
+    itemInGame          ItemInGame?               @relation(fields: [itemInGameId], references: [id])
+    icon                String?
+    dualWielded         Boolean                   @default(false) // should only be true if Item is Equipment Weapon 2H
+    status              Status                    @default(Active)
+    spriteId            String?
+    craftable           Boolean                   @default(false)
+    CharacterItems      CharacterItems[]
+    ItemRaceGender      ItemRaceGender[]
+    itemSets            ItemSet?
+    prototype           ItemPrototype?            @relation(fields: [prototypeId], references: [id])
+    locationFeature     LocationFeatureItem[]
+    inventory           InventoryItem[]
+    rewards             Reward[]
+    requirements        Requirement[]
+    ItemEffect          ItemEffect[]
+    NftItemReward       NftItemReward[]
+    ClaimHistoryNonce   ClaimHistoryNonce[]
+    rootRequirement     RootRequirement[]
+    learnedBook         LearnedBook[]
+    createdAt           DateTime                  @default(now())
+    updatedAt           DateTime                  @default(now()) @updatedAt
+    upgradeAmount       Int                       @default(0)
+    // Skillbooks
+    skillDescription    String?
+    skillArgs           Float[]
+    partDescription     String?
+    partArgs            Float[]
+    rangeTile           Int?
+    numOfUsage          Int?
+    manaCost            Int?
+    elementalBonus      Json?
+    //goldToCraft     BigInt?
+    //hourTimeToCraft Float
+    stakingRewards      StakingQuestReward[]
+    stakingRequirements StakingQuestRequirement[]
+}
+
+model ItemRaceGender {
+    itemId        Int
+    item          Item   @relation(fields: [itemId], references: [id])
+    race          String
+    gender        String
+    relatedImages Json?
+
+    @@id([itemId, race, gender])
+}
+
+model ItemNft {
+    id           Int      @id @default(autoincrement())
+    item         Item?
+    owner        String?
+    listedPrice  Decimal? @db.Decimal(65, 30)
+    listedBlock  Int?
+    offeredPrice Decimal? @db.Decimal(65, 30)
+    offeredBlock Int?
+    soldPrice    Decimal? @db.Decimal(65, 30)
+    soldBlock    Int?
+    totalSupply  Int
+    minted       Int      @default(0)
+}
+
+model ItemInGame {
+    id   Int   @id @default(autoincrement())
+    Item Item?
+}
+
+model CharacterItems {
+    id            Int              @id @default(autoincrement())
+    characterId   Int
+    character     Character        @relation(fields: [characterId], references: [id])
+    itemId        Int
+    item          Item             @relation(fields: [itemId], references: [id])
+    characterSlot CharacterSlots[]
+    // @@id([characterId, itemId])
+}
+
+model CharacterSlots {
+    type             String
+    // characterId Int
+    // character   Character @relation(fields: [characterId], references: [id])
+    // itemId           Int
+    // characterItem CharacterItems @relation(fields: [characterId, itemId], references: [characterId, itemId])
+    characterItemsId Int
+    characterItems   CharacterItems @relation(fields: [characterItemsId], references: [id])
+    Character        Character      @relation(fields: [characterId], references: [id])
+    characterId      Int
+
+    @@id([type, characterId])
+}
+
+model Set {
+    id          Int       @id @default(autoincrement())
+    name        String?   @unique
+    description String?
+    bonuses     Json?
+    itemSets    ItemSet[]
+}
+
+model ItemSet {
+    itemId Int  @unique
+    item   Item @relation(fields: [itemId], references: [id])
+    setId  Int
+    set    Set  @relation(fields: [setId], references: [id])
+
+    @@id([itemId, setId])
+}
+
+// NEW MODELS
+
+model GameState {
+    id                String           @id @default(uuid())
+    userId            String
+    gem               Int              @default(0)
+    energy            Int              @db.SmallInt
+    gold              Int              @default(0)
+    soulstone         Int              @default(0)
+    characterId1      Int?             @unique
+    characterId2      Int?             @unique
+    characterId3      Int?             @unique
+    currentEventId    Int?
+    currentLocationId Int?
+    tutorialState     Int?             @default(-1)
+    utcOffset         Int              @default(0) @db.SmallInt
+    data              Json?
+    rank              Int?             @default(2000)
+    currentLocation   Location?        @relation(fields: [currentLocationId], references: [id])
+    currentEvent      Event?           @relation(fields: [currentEventId], references: [id])
+    user              User             @relation(fields: [userId], references: [id])
+    userQuest         UserQuest[]
+    character1        InGameCharacter? @relation("character1", fields: [characterId1], references: [id])
+    character2        InGameCharacter? @relation("character2", fields: [characterId2], references: [id])
+    character3        InGameCharacter? @relation("character3", fields: [characterId3], references: [id])
+    progress          TaskProgress[]
+    combatLogs        CombatLog[]
+    userLogs          UserLog[]
+    userEvents        UserEvent[]
+    eventHistory      EventHistory[]
+    winnerHistory     MatchHistory[]   @relation("HistoryWinner")
+    loserHistory      MatchHistory[]   @relation("HistoryLoser")
+    lastLogout        DateTime         @default(now())
+    lastUpdatedEnergy DateTime         @default(now())
+    createdAt         DateTime         @default(now())
+    updatedAt         DateTime         @updatedAt
+
+    @@unique([userId])
+}
+
+model InGameCharacter {
+    id                  Int                 @id @default(autoincrement())
+    image               String?
+    raceId              RaceType
+    elementId           ElementType
+    type                CharacterType?      @default(Normal)
+    about               String?             @db.VarChar(255)
+    name                String?             @db.VarChar(255)
+    spriteId            String?
+    gender              Gender
+    traitSkintone       Json?
+    traitEyes           Json?
+    traitHair           Json?
+    traitMouth          Json?
+    traitScar           Json?
+    traitTattoo         Json?
+    str                 Int?                @default(0)
+    agi                 Int?                @default(0)
+    intel               Int?                @default(0)
+    luck                Int?                @default(0)
+    basedStr            Int?                @default(0)
+    basedAgi            Int?                @default(0)
+    basedIntel          Int?                @default(0)
+    basedLuck           Int?                @default(0)
+    currentHp           Int                 @default(0)
+    owner               String?
+    totalPoint          Int                 @default(0)
+    usedPoint           Int                 @default(0)
+    point               Int                 @default(0)
+    level               Int                 @default(1) @db.SmallInt
+    userId              String?
+    characterId         Int?
+    soulCharacterId     Int?
+    currentLocationId   Int?
+    exp                 Int?                @default(0)
+    inUsed              Boolean?            @default(false)
+    alive               Boolean             @default(true)
+    isRegistered        Boolean             @default(false)
+    user                User?               @relation(fields: [userId], references: [id])
+    game1               GameState?          @relation("character1")
+    game2               GameState?          @relation("character2")
+    game3               GameState?          @relation("character3")
+    race                Race                @relation(fields: [raceId], references: [id])
+    element             Element             @relation(fields: [elementId], references: [id])
+    currentLocation     Location?           @relation(fields: [currentLocationId], references: [id])
+    monsters            Task[]              @relation("TaskMonster")
+    npcs                Task[]              @relation("TaskNpc")
+    equipments          InventoryItem[]
+    character           Character?          @relation(fields: [characterId], references: [id])
+    soulCharacter       SoulCharacter?      @relation(fields: [soulCharacterId], references: [id])
+    quests              Quest[]             @relation("NpcReceive")
+    returnQuests        Quest[]             @relation("NpcReturn")
+    stakingQuests       StakingQuest[]      @relation("ReceiveFromNpc")
+    returnStakingQuests StakingQuest[]      @relation("ReturnToNpc")
+    eventMonsters       EventMonster[]
+    ClaimHistoryNonce   ClaimHistoryNonce[]
+    inSearch            LocationSearch[]
+    learnedSkill        LearnedSkill[]
+    learnedBook         LearnedBook[]
+    elo                 CharacterElo[]
+    createdAt           DateTime            @default(now())
+    updatedAt           DateTime            @updatedAt
+
+    @@unique([soulCharacterId])
+    @@unique([characterId])
+}
+
+model Location {
+    id                  Int               @id @default(autoincrement())
+    name                String
+    description         String?
+    type                LocationType      @default(Village)
+    spriteId            String?
+    character           InGameCharacter[]
+    game                GameState[]
+    toLocations         LocationPath[]    @relation("ToLocation")
+    nearBy              LocationPath[]    @relation("FromLocation")
+    features            LocationFeature[]
+    search              LocationSearch[]
+    requireAtLocation   RootRequirement[] @relation("RequireAtLocation")
+    requireFromLocation RootRequirement[] @relation("RequireFromLocation")
+    requireToLocation   RootRequirement[] @relation("RequireToLocation")
+    createdAt           DateTime          @default(now())
+    updatedAt           DateTime          @updatedAt
+}
+
+model LocationPath {
+    id             Int      @id @default(autoincrement())
+    fromLocationId Int
+    toLocationId   Int
+    isLocked       Boolean? @default(false)
+    fromLocation   Location @relation("FromLocation", fields: [fromLocationId], references: [id])
+    toLocation     Location @relation("ToLocation", fields: [toLocationId], references: [id])
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+}
+
+model Race {
+    id           RaceType          @id
+    name         String
+    description  String?
+    character    InGameCharacter[]
+    requirements Requirement[]
+    createdAt    DateTime          @default(now())
+    updatedAt    DateTime          @updatedAt
+}
+
+model Element {
+    id           ElementType       @id
+    name         String
+    description  String
+    character    InGameCharacter[]
+    requirements Requirement[]
+}
+
+model ItemPrototype {
+    id            Int      @id @default(autoincrement())
+    name          String
+    type          ItemType @default(Material)
+    displayName   String
+    description   String?
+    craftable     Boolean  @default(false)
+    dualWielding  Boolean  @default(false)
+    requiredLevel Int      @db.SmallInt
+    equipable     Boolean  @default(false)
+    items         Item[]
+    tasks         Task[]
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+model Quest {
+    id                  Int                @id @default(autoincrement())
+    name                String
+    description         String
+    type                QuestType          @default(Daily)
+    receiveFromNpc      Int?
+    returnToNpc         Int?
+    expiresWithin       Int?
+    isActive            Boolean?           @default(true)
+    userQuests          UserQuest[]
+    questTasks          QuestTask[]
+    requirements        QuestRequirement[]
+    rewards             QuestReward[]
+    takeDialogueId      Int?               @unique
+    returnDialogueId    Int?               @unique
+    requireFinished     Requirement[]      @relation("FinishedQuest")
+    requireDoing        Requirement[]      @relation("DoingQuest")
+    rootRequireFinished RootRequirement[]  @relation("RootFinishedQuest")
+    rootRequireDoing    RootRequirement[]  @relation("RootDoingQuest")
+    npcReceive          InGameCharacter?   @relation("NpcReceive", fields: [receiveFromNpc], references: [id])
+    npcReturn           InGameCharacter?   @relation("NpcReturn", fields: [returnToNpc], references: [id])
+    takeDialogue        Dialogue?          @relation("QuestTakeDialogue", fields: [takeDialogueId], references: [id])
+    returnDialogue      Dialogue?          @relation("QuestReturnDialogue", fields: [returnDialogueId], references: [id])
+    createdAt           DateTime           @default(now())
+    updatedAt           DateTime           @updatedAt
+}
+
+model UserQuest {
+    id        String         @id @default(uuid())
+    gameId    String
+    questId   Int
+    status    QuestStatus    @default(NotReceived)
+    expiredAt DateTime?
+    quest     Quest          @relation(fields: [questId], references: [id])
+    game      GameState      @relation(fields: [gameId], references: [id])
+    progress  TaskProgress[]
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+}
+
+model Task {
+    id             Int               @id @default(autoincrement())
+    type           TaskType
+    name           String
+    description    String?
+    note           String?
+    monsterId      Int?
+    prototypeId    Int?
+    toNpcId        Int?
+    goToLocationId Int?
+    dialogueId     Int?              @unique
+    eventId        Int?
+    data           Json?
+    questTasks     QuestTask[]
+    requirements   TaskRequirement[]
+    monster        InGameCharacter?  @relation("TaskMonster", fields: [monsterId], references: [id])
+    prototype      ItemPrototype?    @relation(fields: [prototypeId], references: [id])
+    npc            InGameCharacter?  @relation("TaskNpc", fields: [toNpcId], references: [id])
+    event          Event?            @relation(fields: [eventId], references: [id])
+    dialogue       Dialogue?         @relation(fields: [dialogueId], references: [id])
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime          @updatedAt
+}
+
+model QuestTask {
+    id               Int            @id @default(autoincrement())
+    questId          Int
+    taskId           Int
+    requiredQuantity Int            @db.SmallInt
+    quest            Quest          @relation(fields: [questId], references: [id])
+    task             Task           @relation(fields: [taskId], references: [id])
+    progress         TaskProgress[]
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt
+}
+
+model TaskProgress {
+    id             Int                 @id @default(autoincrement())
+    gameId         String
+    questTaskId    Int
+    userQuestId    String
+    quantity       Int                 @db.SmallInt
+    targetQuantity Int                 @db.SmallInt
+    status         QuestProgressStatus @default(Undone)
+    game           GameState           @relation(fields: [gameId], references: [id])
+    questTask      QuestTask           @relation(fields: [questTaskId], references: [id])
+    userQuest      UserQuest           @relation(fields: [userQuestId], references: [id])
+    createdAt      DateTime            @default(now())
+    updatedAt      DateTime            @updatedAt
+}
+
+model Event {
+    id               Int                 @id @default(autoincrement())
+    name             String
+    description      String?
+    type             EventType           @default(Passive)
+    isRoot           Boolean
+    isTesting        Boolean             @default(false)
+    rootId           Int?
+    constrantId      Int?                @unique
+    x                Int?                @default(0)
+    y                Int?                @default(0)
+    spriteId         String?
+    growthRate       Float?              @default(0)
+    fixedRate        Float?              @default(0.0)
+    data             Json?
+    once             Boolean             @default(false)
+    appearanceType   EventAppearanceType @default(Fixed)
+    constraint       Constraint?         @relation(fields: [constrantId], references: [id])
+    game             GameState[]
+    rewards          EventReward[]
+    root             Event?              @relation("Root", fields: [rootId], references: [id])
+    task             Task[]
+    predecessor      Event[]             @relation("Root")
+    userEvents       UserEvent[]         @relation("UserEventRoot")
+    currentEvents    UserEvent[]         @relation("CurrentEvent")
+    rootRequirements RootRequirement[]   @relation("RootEvent")
+    finishedRequired RootRequirement[]   @relation("FinishedRequired")
+    paths            EventPath[]
+    monsters         EventMonster[]
+    eventHistory     EventHistory[]
+    createdAt        DateTime            @default(now())
+    updatedAt        DateTime            @updatedAt
+}
+
+model RootRequirement {
+    id              Int                      @id @default(autoincrement())
+    name            String
+    eventId         Int
+    type            RootEventRequirementType
+    itemId          Int?
+    atLocationId    Int?
+    fromLocationId  Int?
+    toLocationId    Int?
+    finishedQuestId Int?
+    finishedEventId Int?
+    doingQuestId    Int?
+    event           Event                    @relation("RootEvent", fields: [eventId], references: [id])
+    item            Item?                    @relation(fields: [itemId], references: [id])
+    atLocation      Location?                @relation("RequireAtLocation", fields: [atLocationId], references: [id])
+    fromLocation    Location?                @relation("RequireFromLocation", fields: [fromLocationId], references: [id])
+    toLocation      Location?                @relation("RequireToLocation", fields: [toLocationId], references: [id])
+    finishedQuest   Quest?                   @relation("RootFinishedQuest", fields: [finishedQuestId], references: [id])
+    doingQuest      Quest?                   @relation("RootDoingQuest", fields: [doingQuestId], references: [id])
+    finishedEvent   Event?                   @relation("FinishedRequired", fields: [finishedEventId], references: [id])
+    createdAt       DateTime                 @default(now())
+    updatedAt       DateTime                 @updatedAt
+}
+
+model UserEvent {
+    id             Int             @id @default(autoincrement())
+    eventId        Int
+    gameId         String
+    isFinished     Boolean?        @default(false)
+    currentEventId Int
+    event          Event           @relation("UserEventRoot", fields: [eventId], references: [id])
+    currentEvent   Event           @relation("CurrentEvent", fields: [currentEventId], references: [id])
+    game           GameState       @relation(fields: [gameId], references: [id])
+    paths          UserEventPath[]
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+}
+
+model UserEventPath {
+    id             Int            @id @default(autoincrement())
+    userEventId    Int
+    eventPathId    Int
+    previousPathId Int?           @unique
+    path           EventPath      @relation(fields: [eventPathId], references: [id])
+    userEvent      UserEvent      @relation(fields: [userEventId], references: [id])
+    previousPath   UserEventPath? @relation("PathHistory", fields: [previousPathId], references: [id])
+    nextPath       UserEventPath? @relation("PathHistory")
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
+}
+
+model UserLog {
+    id          String    @id @default(uuid())
+    gameId      String
+    data        Json?
+    actionCount Int?      @default(0)
+    game        GameState @relation(fields: [gameId], references: [id])
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+}
+
+model Constraint {
+    id          Int     @id @default(autoincrement())
+    name        String
+    description String?
+    event       Event?
+}
+
+model EventPath {
+    id              Int                    @id @default(autoincrement())
+    fromEventId     Int
+    toEventId       Int
+    rootId          Int
+    percentage      Int?
+    consequenceType ConsequenceType?       @default(Positive)
+    checkType       RequirementCheckType   @default(And)
+    requirements    EventPathRequirement[]
+    root            Event                  @relation(fields: [rootId], references: [id])
+    userEventPaths  UserEventPath[]
+    createdAt       DateTime               @default(now())
+    updatedAt       DateTime               @updatedAt
+
+    @@unique([fromEventId, toEventId])
+}
+
+model Requirement {
+    id                   Int                    @id @default(autoincrement())
+    name                 String?
+    description          String?
+    type                 RequirementType
+    stat                 String?
+    raceId               RaceType?
+    elementId            ElementType?
+    itemId               Int?
+    finishedQuestId      Int?
+    doingQuestId         Int?
+    item                 Item?                  @relation(fields: [itemId], references: [id])
+    questRequirement     QuestRequirement[]
+    taskRequirement      TaskRequirement[]
+    dialogueRequirement  DialogueRequirement[]
+    eventPathRequirement EventPathRequirement[]
+    race                 Race?                  @relation(fields: [raceId], references: [id])
+    element              Element?               @relation(fields: [elementId], references: [id])
+    finishedQuest        Quest?                 @relation("FinishedQuest", fields: [finishedQuestId], references: [id])
+    doingQuest           Quest?                 @relation("DoingQuest", fields: [doingQuestId], references: [id])
+    createdAt            DateTime               @default(now())
+    updatedAt            DateTime               @updatedAt
+}
+
+model QuestRequirement {
+    id            Int         @id @default(autoincrement())
+    requirementId Int
+    questId       Int
+    quantity      Int         @default(1)
+    quest         Quest       @relation(fields: [questId], references: [id])
+    requirement   Requirement @relation(fields: [requirementId], references: [id])
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+
+    @@unique([requirementId, questId])
+}
+
+model TaskRequirement {
+    id            Int         @id @default(autoincrement())
+    requirementId Int
+    taskId        Int
+    task          Task        @relation(fields: [taskId], references: [id])
+    requirement   Requirement @relation(fields: [requirementId], references: [id])
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+}
+
+model EventPathRequirement {
+    id            Int         @id @default(autoincrement())
+    requirementId Int
+    eventPathId   Int
+    quantity      Int?        @default(1)
+    eventPath     EventPath   @relation(fields: [eventPathId], references: [id])
+    requirement   Requirement @relation(fields: [requirementId], references: [id])
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+
+    @@unique([requirementId, eventPathId])
+}
+
+model Reward {
+    id          Int           @id @default(autoincrement())
+    type        RewardType    @default(Item)
+    itemId      Int?
+    materialId  Int?
+    name        String
+    partnerId   Int?
+    description String?
+    road        Int[]
+    material    Material?     @relation(fields: [materialId], references: [id])
+    partner     Partner?      @relation(fields: [partnerId], references: [id])
+    item        Item?         @relation(fields: [itemId], references: [id])
+    quests      QuestReward[]
+    events      EventReward[]
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @default(now()) @updatedAt
+}
+
+model QuestReward {
+    id         Int    @id @default(autoincrement())
+    questId    Int
+    rewardId   Int
+    quantity   Int?   @default(1)
+    percentage Int?
+    reward     Reward @relation(fields: [rewardId], references: [id])
+    quest      Quest  @relation(fields: [questId], references: [id])
+}
+
+model EventReward {
+    id         Int    @id @default(autoincrement())
+    eventId    Int
+    rewardId   Int
+    quantity   Int?   @default(1)
+    percentage Int?
+    reward     Reward @relation(fields: [rewardId], references: [id])
+    event      Event  @relation(fields: [eventId], references: [id])
+}
+
+model ItemEffect {
+    itemId   Int
+    item     Item    @relation(fields: [itemId], references: [id])
+    effectId Int
+    effect   Effect  @relation(fields: [effectId], references: [id])
+    values   Float[]
+
+    @@id([itemId, effectId])
+}
+
+model Effect {
+    id          Int          @id @default(autoincrement())
+    name        String       @unique
+    description String
+    argCount    Int          @default(0)
+    ItemEffect  ItemEffect[]
+}
+
+model LocationFeature {
+    id         Int                   @id @default(autoincrement())
+    type       FeatureType
+    locationId Int
+    location   Location              @relation(fields: [locationId], references: [id])
+    items      LocationFeatureItem[]
+    createdAt  DateTime              @default(now())
+    updatedAt  DateTime              @updatedAt
+
+    @@unique([locationId, type])
+}
+
+model LocationFeatureItem {
+    id                Int             @id @default(autoincrement())
+    locationFeatureId Int
+    itemId            Int
+    price             Int?            @default(0)
+    item              Item            @relation(fields: [itemId], references: [id])
+    feature           LocationFeature @relation(fields: [locationFeatureId], references: [id])
+    createdAt         DateTime        @default(now())
+    updatedAt         DateTime        @updatedAt
+
+    @@unique([locationFeatureId, itemId])
+}
+
+model LocationSearch {
+    id         Int             @id @default(autoincrement())
+    locationId Int
+    monsterId  Int
+    percentage Int             @default(0)
+    quantity   Int?            @default(1)
+    location   Location        @relation(fields: [locationId], references: [id])
+    monster    InGameCharacter @relation(fields: [monsterId], references: [id])
+    createdAt  DateTime        @default(now())
+    updatedAt  DateTime        @updatedAt
+
+    @@unique([locationId, monsterId])
+}
+
+model InventoryItem {
+    id                Int              @id @default(autoincrement())
+    itemId            Int
+    inGameCharacterId Int?
+    slot              EquipmentSlot?
+    userId            String?
+    item              Item             @relation(fields: [itemId], references: [id])
+    igCharacter       InGameCharacter? @relation(fields: [inGameCharacterId], references: [id])
+    createdAt         DateTime         @default(now())
+    updatedAt         DateTime         @updatedAt
+
+    @@unique([itemId, inGameCharacterId, slot])
+    @@unique([inGameCharacterId, slot])
+}
+
+model CombatLog {
+    id        Int       @id @default(autoincrement())
+    gameId    String
+    data      Json?
+    game      GameState @relation(fields: [gameId], references: [id])
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+}
+
+model Config {
+    id                Int     @id @default(autoincrement())
+    energyPerDay      Int?    @default(0)
+    energyCombatCost  Int?    @default(0)
+    baseDamge         Int?    @default(0)
+    baseHp            Int?    @default(0)
+    energyMoveCost    Int?    @default(0)
+    energyLimit       Int?    @default(0)
+    energyPenalty     Int?    @default(0)
+    goldDropRate      Int?    @default(0)
+    gemDropRate       Int?    @default(0)
+    soulstoneDropRate Float?  @default(1.0)
+    evadeRatio        Int?    @default(100)
+    criticalRatio     Int?    @default(100)
+    criticalDamage    Int?    @default(150)
+    basedCrit         Int?    @default(10)
+    basedEvade        Int?    @default(10)
+    initLocationId    Int?    @default(-1)
+    firstVillageId    Int?    @default(1)
+    version           String?
+    skillConfigVars   Json?
+    season            Int?    @default(1)
+}
+
+model EventMonster {
+    id        Int             @id @default(autoincrement())
+    eventId   Int
+    monsterId Int
+    quantity  Int             @default(1)
+    event     Event           @relation(fields: [eventId], references: [id])
+    monster   InGameCharacter @relation(fields: [monsterId], references: [id])
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
+
+    @@unique([eventId, monsterId])
+}
+
+model EventHistory {
+    id        Int       @id @default(autoincrement())
+    eventId   Int
+    gameId    String
+    missCount Int       @default(1)
+    game      GameState @relation(fields: [gameId], references: [id])
+    event     Event     @relation(fields: [eventId], references: [id])
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    @@unique([eventId, gameId])
+}
+
+model Material {
+    id                  Int                       @id @default(autoincrement())
+    name                String
+    description         String?
+    spriteId            String?
+    ClaimHistoryNonce   ClaimHistoryNonce[]
+    MaterialReward      MaterialReward[]
+    rewards             Reward[]
+    stakingRewards      StakingQuestReward[]
+    stakingRequirements StakingQuestRequirement[]
+    listedPrice         Decimal?                  @db.Decimal(65, 30)
+    listedBlock         Int?
+    offeredPrice        Decimal?                  @db.Decimal(65, 30)
+    offeredBlock        Int?
+    soldPrice           Decimal?                  @db.Decimal(65, 30)
+    soldBlock           Int?
+    minted              Int                       @default(0)
+    createdAt           DateTime                  @default(now())
+    updatedAt           DateTime                  @updatedAt
+}
+
+model Partner {
+    id                Int                 @id @default(autoincrement())
+    name              String?
+    tokenName         String?
+    tokenSymbol       String?
+    contract          String?
+    decimals          Int?
+    nftItemRewards    NftItemReward[]
+    tokenRewards      TokenReward[]
+    rewards           Reward[]
+    claimHistoryNonce ClaimHistoryNonce[]
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+
+    @@unique([tokenSymbol])
+    @@unique([contract])
+}
+
+model NftItemReward {
+    id        Int      @id @default(autoincrement())
+    owner     String
+    itemId    Int
+    quantity  Int      @default(0)
+    partnerId Int?
+    partner   Partner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+    item      Item     @relation(fields: [itemId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([owner, itemId])
+}
+
+model TokenReward {
+    id        Int      @id @default(autoincrement())
+    owner     String
+    quantity  Int      @default(0)
+    partnerId Int?
+    partner   Partner? @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([owner, partnerId])
+}
+
+model MaterialReward {
+    id         Int      @id @default(autoincrement())
+    owner      String
+    materialId Int
+    quantity   Int      @default(0)
+    material   Material @relation(fields: [materialId], references: [id])
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@unique([owner, materialId])
+}
+
+model ClaimHistory {
+    id                Int                 @id @default(autoincrement())
+    type              ClaimRewardType
+    owner             String
+    nonce             Int?
+    isMinted          Boolean             @default(false)
+    claimHistoryNonce ClaimHistoryNonce[]
+    createdAt         DateTime            @default(now())
+    updatedAt         DateTime            @updatedAt
+
+    @@unique([type, owner, nonce])
+}
+
+model ClaimHistoryNonce {
+    id             Int              @id @default(autoincrement())
+    claimHistoryId Int
+    igCharacterId  Int?
+    materialId     Int?
+    itemId         Int?
+    partnerId      Int?
+    quantity       Int?             @default(0)
+    signature      String?
+    claimHistory   ClaimHistory     @relation(fields: [claimHistoryId], references: [id])
+    igCharacter    InGameCharacter? @relation(fields: [igCharacterId], references: [id])
+    material       Material?        @relation(fields: [materialId], references: [id])
+    item           Item?            @relation(fields: [itemId], references: [id])
+    partner        Partner?         @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+}
+
+model Dialogue {
+    id                 Int                   @id @default(autoincrement())
+    name               String?
+    triggerType        DialogueTriggerType   @default(Interactive)
+    locationId         Int?
+    eventId            Int?
+    taskDialogue       Task?
+    questTake          Quest?                @relation("QuestTakeDialogue")
+    questReturn        Quest?                @relation("QuestReturnDialogue")
+    stakingQuestTake   StakingQuest?         @relation("TakeStakeDialogue")
+    stakingQuestReturn StakingQuest?         @relation("ReturnStakeDialogue")
+    requirements       DialogueRequirement[]
+    texts              DialogueText[]
+    createdAt          DateTime              @default(now())
+    updatedAt          DateTime              @updatedAt
+}
+
+model DialogueText {
+    id             Int                 @id @default(autoincrement())
+    text           String?
+    emotion        DialogueEmotionType @default(Normal)
+    spriteId       String?
+    name           String?
+    characterIndex Int?
+    enemyIndex     Int?
+    dialogueId     Int
+    dialogue       Dialogue            @relation(fields: [dialogueId], references: [id])
+    createdAt      DateTime            @default(now())
+    updatedAt      DateTime            @updatedAt
+}
+
+model DialogueRequirement {
+    id            Int         @id @default(autoincrement())
+    requirementId Int
+    dialogueId    Int
+    quantity      Int         @default(1)
+    dialogue      Dialogue    @relation(fields: [dialogueId], references: [id])
+    requirement   Requirement @relation(fields: [requirementId], references: [id])
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+
+    @@unique([requirementId, dialogueId])
+}
+
+model Map {
+    id        Int      @id @default(autoincrement())
+    name      String?
+    data      Json?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Skill {
+    id                 Int          @id @default(autoincrement())
+    skillId            String
+    name               String
+    requiredLevel      Int?         @default(0)
+    type               SkillType    @default(Passive)
+    targetType         TargetType?  @default(Ground)
+    damageType         DamageType   @default(Physical)
+    canBeCountered     Boolean?     @default(false)
+    job                JobType?     @default(Paladin)
+    bodyPartBonus      String?
+    moveAfterCast      Boolean?     @default(true)
+    requiredMainWeapon String?
+    requiredSubWeapon  String?
+    description        String?
+    range              Int?         @default(0)
+    bonusRange         Int?         @default(0)
+    parentId           Int?
+    race               RaceType
+    availableInGame    Boolean?     @default(false)
+    parent             Skill?       @relation("Dependency", fields: [parentId], references: [id])
+    children           Skill[]      @relation("Dependency")
+    levels             SkillLevel[]
+    createdAt          DateTime     @default(now())
+    updatedAt          DateTime     @updatedAt
+
+    @@unique([skillId])
+}
+
+model SkillLevel {
+    id          Int            @id @default(autoincrement())
+    skillId     Int
+    lvl         Int?           @default(1)
+    description String?
+    manaCost    Int?           @default(1)
+    cooldown    Int?           @default(0)
+    skill       Skill          @relation(fields: [skillId], references: [id])
+    skillConfig Json?
+    learned     LearnedSkill[]
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+
+    @@unique([skillId, lvl])
+}
+
+model LearnedSkill {
+    id            Int             @id @default(autoincrement())
+    igCharacterId Int
+    skillLevelId  Int
+    igCharacter   InGameCharacter @relation(fields: [igCharacterId], references: [id])
+    skillLevel    SkillLevel      @relation(fields: [skillLevelId], references: [id])
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+
+    @@unique([skillLevelId, igCharacterId])
+}
+
+model LearnedBook {
+    id            Int             @id @default(autoincrement())
+    igCharacterId Int
+    bookId        Int
+    lvl           Int?            @default(1)
+    igCharacter   InGameCharacter @relation(fields: [igCharacterId], references: [id])
+    book          Item            @relation(fields: [bookId], references: [id])
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+
+    @@unique([igCharacterId, bookId])
+}
+
+model MatchHistory {
+    id        Int        @id @default(autoincrement())
+    season    Int?       @default(1)
+    winnerId  String?
+    loserId   String?
+    data      Json?
+    winner    GameState? @relation("HistoryWinner", fields: [winnerId], references: [id])
+    loser     GameState? @relation("HistoryLoser", fields: [loserId], references: [id])
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model CharacterElo {
+    id            Int             @id @default(autoincrement())
+    igCharacterId Int
+    season        Int?            @default(1)
+    elo           Int?            @default(0)
+    igCharacter   InGameCharacter @relation(fields: [igCharacterId], references: [id])
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+
+    @@unique([igCharacterId, season])
+}
+
+model CharacterUpgradeHistory {
+    id          Int     @id @default(autoincrement())
+    characterId Int
+    bodyPart    String
+    txHash      String  @unique
+    status      Boolean
+    reason      String?
+}
+
+model NotificationSetting {
+    id        Int     @id @default(autoincrement())
+    userId    String  @unique
+    subscribe Boolean @default(true)
+}
+
+model Guild {
+    id            Int      @id @default(autoincrement())
+    name          String?
+    image         String?
+    description   String?
+    owner         String
+    memberCount   Int
+    level         Int
+    totalStrength Int
+    guildMembers  Wallet[]
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+model Wallet {
+    id       String   @id // wallet address
+    guildId  Int?
+    guild    Guild?   @relation(fields: [guildId], references: [id])
+    strength Int
+    joinedAt DateTime @default(now())
+}
+
+model StakingQuest {
+    id               Int                       @id @default(autoincrement())
+    name             String
+    description      String?
+    duration         Int
+    receiveFromNpc   Int?
+    returnToNpc      Int?
+    takeDialogueId   Int?                      @unique
+    returnDialogueId Int?                      @unique
+    spriteId         String?
+    status           StakingQuestStatus        @default(Inactive)
+    requirements     StakingQuestRequirement[]
+    rewards          StakingQuestReward[]
+    progresses       StakingQuestProgress[]
+    receiveNpc       InGameCharacter?          @relation("ReceiveFromNpc", fields: [receiveFromNpc], references: [id])
+    returnNpc        InGameCharacter?          @relation("ReturnToNpc", fields: [returnToNpc], references: [id])
+    takeDialogue     Dialogue?                 @relation("TakeStakeDialogue", fields: [takeDialogueId], references: [id])
+    returnDialogue   Dialogue?                 @relation("ReturnStakeDialogue", fields: [returnDialogueId], references: [id])
+}
+
+model StakingQuestRequirement {
+    id              Int                         @id @default(autoincrement())
+    name            String?
+    description     String?
+    type            StakingQuestRequirementType
+    quantity        Int?                        @default(1)
+    raceId          RaceType?
+    elementId       ElementType?
+    level           Int?
+    rarity          Decimal?                    @db.Decimal(65, 30)
+    stat            String?
+    gender          Gender?
+    itemId          Int?
+    materialId      Int?
+    questId         Int
+    finishedQuestId Int?
+    item            Item?                       @relation(fields: [itemId], references: [id])
+    material        Material?                   @relation(fields: [materialId], references: [id])
+    quest           StakingQuest                @relation(fields: [questId], references: [id])
+    createdAt       DateTime                    @default(now())
+    updatedAt       DateTime                    @updatedAt
+}
+
+model StakingQuestReward {
+    id          Int                   @id @default(autoincrement())
+    type        StakingRewardType
+    quantity    Int
+    successRate Decimal               @default(1) @db.Decimal(65, 30)
+    itemId      Int?
+    materialId  Int?
+    questId     Int
+    category    StakingRewardCategory @default(Normal)
+    quest       StakingQuest          @relation(fields: [questId], references: [id])
+    item        Item?                 @relation(fields: [itemId], references: [id])
+    material    Material?             @relation(fields: [materialId], references: [id])
+
+    @@unique([type, questId])
+}
+
+model StakingQuestPool {
+    id              Int                  @id @default(autoincrement())
+    owner           String
+    characterId     Int?                 @unique
+    soulCharacterId Int?                 @unique
+    questProgressId Int
+    character       Character?           @relation(fields: [characterId], references: [id])
+    soulCharacter   SoulCharacter?       @relation(fields: [soulCharacterId], references: [id])
+    questProgress   StakingQuestProgress @relation(fields: [questProgressId], references: [id])
+}
+
+model StakingQuestProgress {
+    id        Int                        @id @default(autoincrement())
+    questId   Int
+    owner     String
+    status    StakingQuestProgressStatus @default(Inprogress)
+    quest     StakingQuest               @relation(fields: [questId], references: [id])
+    pools     StakingQuestPool[]
+    createdAt DateTime                   @default(now())
+    updatedAt DateTime                   @updatedAt
+}
