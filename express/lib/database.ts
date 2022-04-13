@@ -1,13 +1,18 @@
-import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { EOL } from 'os';
+import { PrismaClient } from '@prisma/client';
 
-import { Logger } from './logger';
-const logger = Logger.create(module);
+const prisma = new PrismaClient({
+  log: [{ emit: 'event', level: 'query' }]
+});
 
-const { MONGO_DB_HOST, MONGO_DB_PORT, MONGO_DB_DATABASE } = process.env;
+const LOG_FILE = path.join(process.cwd(), 'queries.log');
 
-export async function connect() {
-  mongoose.connect(`mongodb://${MONGO_DB_HOST}:${MONGO_DB_PORT}/${MONGO_DB_DATABASE}`);
-  mongoose.connection.on('connected', () => logger.info('Connected database'));
+prisma.$on('query', (e) => {
+  const log = `QUERY: ${e.query} ${EOL}PARAMS: ${e.params} ${EOL}DURATION: ${e.duration}ms${EOL}`;
 
-  return mongoose;
-}
+  fs.appendFileSync(LOG_FILE, log);
+});
+
+export default prisma;
