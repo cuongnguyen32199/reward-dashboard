@@ -1,4 +1,4 @@
-name: learn-github-actions
+name: Learn Github Actions
 on:
   push:
     branches: [main]
