@@ -19,4 +19,4 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Build your app
-        run: yarn build --if-present
+        run: yarn build
