@@ -2,7 +2,7 @@ module.exports = {
   apps : [
     {
       name: 'NextExpress',
-      script: 'yarn start',
+      script: 'npm run dev',
       cwd: '/home/ubuntu/actions-runner/next-express/reward-dashboard/reward-dashboard',
       watch: '.'
     }
