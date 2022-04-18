@@ -13,8 +13,8 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
-      - run: npm install -g yarn
+          node-version: ${{ matrix.node-version }}
+      - run: npm install -g yarn pm2
       - run: yarn -v
       - name: Install dependencies
         run: yarn
@@ -22,3 +22,5 @@ jobs:
         run: npx prisma generate
       - name: Build your app
         run: yarn build
+      - name: Start server with PM2
+        run: pm2 start NextExpress
