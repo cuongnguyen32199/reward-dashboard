@@ -1,7 +1,8 @@
 name: Learn Github Actions
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 jobs:
   build:
     runs-on: self-hosted
@@ -22,3 +23,5 @@ jobs:
         run: npx prisma generate
       - name: Build your app
         run: yarn build
+      - name: Start PM2
+        run: pm2 start
